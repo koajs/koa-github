@@ -31,6 +31,9 @@
   },
   "devDependencies": {
     "koa": "*",
-    "koa-sess": "*"
+    "koa-sess": "*",
+    "contributors": "*",
+    "mocha": "*",
+    "should": "*"
   }
 }
