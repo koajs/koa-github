@@ -14,7 +14,7 @@ app.use(session());
 app.use(githubAuth({
   clientID: '5ec1d25d2a3baf99a03c',
   clientSecret: '513607494a244e2759738cae3d50a89494c1e7f0',
-  callbackURL: 'http://localhost:7001',
+  callbackURL: 'http://localhost:7001/github/auth/callback',
   userKey: 'user',
   timeout: 10000
 }));

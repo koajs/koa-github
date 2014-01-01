@@ -23,7 +23,6 @@ var assert = require('assert');
 var defaultOptions = {
   tokenKey: 'githubToken',
   signinPath: '/github/auth',
-  callbackPath: '/github/auth/callback',
   timeout: 5000,
   scope: ['user']
 };
@@ -40,9 +39,8 @@ function hasOwnProperty (obj, prop) {
  * @param {Object} options 
  *   - [String] clientID      github client ID
  *   - [String] clientSecret  github client secret
- *   - [String] redirectUrl   github redirect url 
- *   - [String] signinPath    sign in with github url, default is /github/auth
- *   - [String] callbackPath  github callback url, default is /github/auth/callback
+ *   - [String] callbackURL   github callback url 
+ *   - [String] signinPath    sign in with github's triggle path, default is /github/auth
  *   - [String] tokenKey      session key, default is githubToken
  *   - [String] userKey       user key, if set user key, will request github once to get the user info
  *   - [Array]  scope         A comma separated list of scopes
@@ -54,12 +52,14 @@ module.exports = function (options) {
   if (!options.clientID || !options.clientSecret || !options.callbackURL) {
     throw new Error('github auth need clientID, clientSecret and callbackURL');
   }
-
   for (var key in defaultOptions) {
     if (!hasOwnProperty(options, key)) {
       options[key] = defaultOptions[key];
     }
   }
+  options.callbackURL = options.callbackURL;
+  options.callbackPath = urlParse(options.callbackURL).path;
+
   urllib.TIMEOUT = options.timeout;
   debug('init github auth middleware with options %j', options);
 
@@ -80,9 +80,8 @@ module.exports = function (options) {
     if (this.path === options.signinPath) {
       var state = random();
       var redirectUrl = 'https://github.com/login/oauth/authorize?';
-      redirectUrl = util.format('%sclient_id=%s&redirect_uri=%s%s&scope=%s&state=%s',
-        redirectUrl, options.clientID, options.callbackURL, options.callbackPath, 
-        options.scope, state);
+      redirectUrl = util.format('%sclient_id=%s&redirect_uri=%s&scope=%s&state=%s',
+        redirectUrl, options.clientID, options.callbackURL, options.scope, state);
 
       this.session._githubstate = state;
       debug('request github auth, redirect to %s', redirectUrl);

@@ -52,19 +52,19 @@ http.createServer(app.callback()).listen(7001);
   @param {Object} options 
     - [String] clientID      github client ID     // regist in https://github.com/settings/applications
     - [String] clientSecret  github client secret
-    - [String] redirectUrl   github redirect url 
-    - [String] signinPath    sign in with github url, default is /github/auth
-    - [String] callbackPath  github callback url, default is /github/auth/callback
+    - [String] callbackURL   github redirect url
+    - [String] signinPath    sign in with github's triggle path, default is /github/auth
     - [String] tokenKey      session key, default is githubToken
     - [String] userKey       user key, if set user key, will request github once to get the user info
     - [Array]  scope         A comma separated list of scopes
     - [Number] timeout       request github api timeout
 ```
 
+* clientID, clentSecret and callbackURL are regist in https://github.com/settings/applications.
+* if you set userKey field, `koa-github` will request to get the user info and set this object to `this.session[options.userKey]`, otherwise `koa-github` will not do this request.
+
 ## TODO
-* add test
 * support redirect
-* refine readme
 
 ## Licences
 (The MIT License)
