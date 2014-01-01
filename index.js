@@ -14,10 +14,11 @@
  */
 
 var urllib = require('co-urllib');
-var debug = require('debug')('githubAuth');
+var debug = require('debug')('koa-github');
 var util = require('util');
 var qsParse = require('querystring').parse;
 var urlParse = require('url').parse;
+var assert = require('assert');
 
 var defaultOptions = {
   tokenKey: 'githubToken',
@@ -67,6 +68,9 @@ module.exports = function (options) {
   }
 
   return function *githubAuth(next) {
+    if (!this.session) {
+      return this.throw('github auth need session', 500);
+    }
     if (this.session[options.tokenKey]) {
       debug('already has github token');
       return yield next;
@@ -91,9 +95,9 @@ module.exports = function (options) {
       var url = urlParse(this.request.url, true);
 
       // must have code
-      if (!url.query.code) {
-        debug('request url do not have `code`');
-        this.throw(400);
+      if (!url.query.code || !url.query.state) {
+        debug('request url need `code` and `state`');
+        return this.throw(400);
       }
 
       // check the state, protect against cross-site request forgery attacks
@@ -101,7 +105,7 @@ module.exports = function (options) {
         debug('request state is %s, but the state in session is %s',
           url.query.state, this.session._githubstate);
         delete this.session._githubstate;
-        this.throw(403);
+        return this.throw(403);
       }
 
       //step three: request to get the access token
@@ -114,45 +118,40 @@ module.exports = function (options) {
         }
       };
       debug('request the access token with data: %j', requsetOptions.data);
-      var result;
+      var token;
       try {
-        result = yield urllib.request(tokenUrl, requsetOptions);
+        var result = yield urllib.request(tokenUrl, requsetOptions);
+        assert.equal(result[1].statusCode, 200, 
+          'response status ' + result[1].statusCode + ' not match 200');
+
+        token = qsParse(result[0].toString()).access_token;
+        assert(token, 'response without access_token');
       } catch (err) {
-        return this.throw('request github token error:' + err.message, 500);
+        return this.throw('request github token error: ' + err.message, 500);
       }
-      if (result[1].statusCode !== 200) {
-        return this.throw('request github token error: ' + result[0].toString(),
-          result[1].statusCode);
-      }
-      var token = qsParse(result[0].toString()).access_token;
-      if (!token) {
-        return this.throw('request github token response no token', 404);
-      }
+
       this.session[options.tokenKey] = token;
       debug('get access_token %s and store in session.%s', token, options.tokenKey);
       delete this.session._githubstate;
 
       //step four: if set userKey, get user
       if (options.userKey) {
+        var result;
         try {
           var userUrl = 'https://api.github.com/user';
           var authOptions = {
             headers: {
               Authorization: 'token ' + token,
-              'user-agent': urllib.USER_AGENT
+              'user-agent': 'koa-github'
             },
             dataType: 'json'
           };
           result = yield urllib.request(userUrl, authOptions);
+          assert.equal(result[1].statusCode, 200, 
+            'response status ' + result[1].statusCode + ' not match 200');
+          assert(result[0], 'response without user info');
         } catch (err) {
-          return this.throw('request github user info error:' + err.message, 500);
-        }
-        if (result[1].statusCode !== 200) {
-          return this.throw('request github user info error: ' + result[0].toString(),
-            result[1].statusCode);
-        }
-        if (!result[0]) {
-          return this.throw('request github user info response no user', 404);
+          return this.throw('request github user info error: ' + err.message, 500);
         }
         debug('get user info %j and store in session.%s', result[0], options.userKey);
         this.session[options.userKey] = result[0];
