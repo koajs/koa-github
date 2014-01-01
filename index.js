@@ -24,7 +24,8 @@ var defaultOptions = {
   tokenKey: 'githubToken',
   signinPath: '/github/auth',
   timeout: 5000,
-  scope: ['user']
+  scope: ['user'],
+  redirect: 'redirect_uri'
 };
 
 function hasOwnProperty (obj, prop) {
@@ -45,6 +46,7 @@ function hasOwnProperty (obj, prop) {
  *   - [String] userKey       user key, if set user key, will request github once to get the user info
  *   - [Array]  scope         A comma separated list of scopes
  *   - [Number] timeout       request github api timeout
+ *   - [String] redirect      redirect key when call signinPath, so we can redirect after auth, default is redirect_uri
  *   
  */
 module.exports = function (options) {
@@ -71,10 +73,6 @@ module.exports = function (options) {
     if (!this.session) {
       return this.throw('github auth need session', 500);
     }
-    if (this.session[options.tokenKey]) {
-      debug('already has github token');
-      return yield next;
-    }
 
     // first step: redirect to github
     if (this.path === options.signinPath) {
@@ -84,12 +82,35 @@ module.exports = function (options) {
         redirectUrl, options.clientID, options.callbackURL, options.scope, state);
 
       this.session._githubstate = state;
+
+      //try to get the redirect url and set it to session
+      try {
+        var redirect = decodeURIComponent(urlParse(this.url, true).query[options.redirect] || '');
+        if (redirect[0] === '/') {
+          this.session._githubredirect = redirect;
+          debug('get github callback redirect uri: %s', redirect);
+        }
+      } catch (err) {
+        debug('decode redirect uri error');
+      }
       debug('request github auth, redirect to %s', redirectUrl);
+      //if already signin
+      if (this.session[options.tokenKey]) {
+        debug('already has github token');
+        redirectUrl = this.session._githubredirect || '/';
+        delete this.session._githubredirect;
+      }
       return this.redirect(redirectUrl);
     }
 
     // secound step: github callback
     if (this.path === options.callbackPath) {
+      //if already signin
+      if (this.session[options.tokenKey]) {
+        debug('already has github token');
+        return this.redirect('/');
+      }
+
       debug('after auth, jump from github.');
       var url = urlParse(this.request.url, true);
 
@@ -155,7 +176,9 @@ module.exports = function (options) {
         debug('get user info %j and store in session.%s', result[0], options.userKey);
         this.session[options.userKey] = result[0];
       }
-      return this.redirect('/');
+      var githubredirect = this.session._githubredirect || '/';
+      delete this.session._githubredirect;
+      return this.redirect(githubredirect);
     }
 
     yield next;

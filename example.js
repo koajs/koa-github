@@ -21,7 +21,7 @@ app.use(githubAuth({
 
 app.use(function *handler() {
   if (!this.session.githubToken) {
-    this.body = '<a href="/github/auth">login with github</a>';
+    this.body = '<a href="/github/auth?redirect_uri=/callback">login with github</a>';
   } else {
     this.body = this.session.user;
   }
