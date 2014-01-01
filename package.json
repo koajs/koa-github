@@ -34,7 +34,6 @@
     "koa-sess": "*",
     "contributors": "*",
     "mocha": "*",
-    "should": "*",
-    "co": "*"
+    "should": "*"
   }
 }
