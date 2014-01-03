@@ -1,4 +1,4 @@
-koa-github
+koa-github [![Build Status](https://secure.travis-ci.org/dead-horse/koa-github.png)](http://travis-ci.org/dead-horse/koa-github) [![Coverage Status](https://coveralls.io/repos/dead-horse/koa-github/badge.png)](https://coveralls.io/r/dead-horse/koa-github) [![Dependency Status](https://gemnasium.com/dead-horse/koa-github.png)](https://gemnasium.com/dead-horse/koa-github)
 ==========
 
 simple github auth middleware for koa
