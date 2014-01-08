@@ -15,6 +15,7 @@
 
 var urllib = require('co-urllib');
 var debug = require('debug')('koa-github');
+var utility = require('utility');
 var util = require('util');
 var qsParse = require('querystring').parse;
 var urlParse = require('url').parse;
@@ -28,26 +29,22 @@ var defaultOptions = {
   redirect: 'redirect_uri'
 };
 
-function hasOwnProperty (obj, prop) {
-  return Object.prototype.hasOwnProperty.call(obj, prop);
-}
-
 /**
  * auth with github
  * need use session middleware before
  * see http://developer.github.com/v3/oauth/#web-application-flow
- * 
- * @param {Object} options 
+ *
+ * @param {Object} options
  *   - [String] clientID      github client ID
  *   - [String] clientSecret  github client secret
- *   - [String] callbackURL   github callback url 
+ *   - [String] callbackURL   github callback url
  *   - [String] signinPath    sign in with github's triggle path, default is /github/auth
  *   - [String] tokenKey      session key, default is githubToken
  *   - [String] userKey       user key, if set user key, will request github once to get the user info
  *   - [Array]  scope         A comma separated list of scopes
  *   - [Number] timeout       request github api timeout
  *   - [String] redirect      redirect key when call signinPath, so we can redirect after auth, default is redirect_uri
- *   
+ *
  */
 module.exports = function (options) {
   options = options || {};
@@ -55,7 +52,7 @@ module.exports = function (options) {
     throw new Error('github auth need clientID, clientSecret and callbackURL');
   }
   for (var key in defaultOptions) {
-    if (!hasOwnProperty(options, key)) {
+    if (!utility.has(options, key)) {
       options[key] = defaultOptions[key];
     }
   }
@@ -65,10 +62,6 @@ module.exports = function (options) {
   urllib.TIMEOUT = options.timeout;
   debug('init github auth middleware with options %j', options);
 
-  function random() {
-    return Math.random().toString();
-  }
-
   return function *githubAuth(next) {
     if (!this.session) {
       return this.throw('github auth need session', 500);
@@ -76,7 +69,7 @@ module.exports = function (options) {
 
     // first step: redirect to github
     if (this.path === options.signinPath) {
-      var state = random();
+      var state = utility.randomString();
       var redirectUrl = 'https://github.com/login/oauth/authorize?';
       redirectUrl = util.format('%sclient_id=%s&redirect_uri=%s&scope=%s&state=%s',
         redirectUrl, options.clientID, options.callbackURL, options.scope, state);
@@ -141,7 +134,7 @@ module.exports = function (options) {
       var token;
       try {
         var result = yield urllib.request(tokenUrl, requsetOptions);
-        assert.equal(result[1].statusCode, 200, 
+        assert.equal(result[1].statusCode, 200,
           'response status ' + result[1].statusCode + ' not match 200');
 
         token = qsParse(result[0].toString()).access_token;
@@ -167,7 +160,7 @@ module.exports = function (options) {
             dataType: 'json'
           };
           result = yield urllib.request(userUrl, authOptions);
-          assert.equal(result[1].statusCode, 200, 
+          assert.equal(result[1].statusCode, 200,
             'response status ' + result[1].statusCode + ' not match 200');
           assert(result[0], 'response without user info');
         } catch (err) {

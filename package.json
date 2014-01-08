@@ -27,7 +27,10 @@
   "homepage": "https://github.com/dead-horse/koa-github",
   "dependencies": {
     "co-urllib": "0.0.1",
-    "debug": "0.7.4"
+    "debug": "0.7.4",
+    "koa": "0.2.1",
+    "koa-sess": "0.0.5",
+    "utility": "0.1.10"
   },
   "devDependencies": {
     "contributors": "*",
@@ -35,6 +38,6 @@
     "koa-sess": "*",
     "mocha": "*",
     "should": "2.1.1",
-    "supertest": "0.8.2"
+    "supertest": "0.8.3"
   }
 }
