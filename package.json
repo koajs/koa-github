@@ -6,7 +6,9 @@
   "scripts": {
     "test": "make test"
   },
-  "files": ["index.js"],
+  "files": [
+    "index.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/dead-horse/koa-github.git"
@@ -36,6 +38,7 @@
     "koa-sess": "*",
     "should": "2.1.1",
     "supertest": "0.8.3",
-    "istanbul": "git://github.com/gotwarlost/istanbul.git#harmony"
+    "istanbul": "git://github.com/gotwarlost/istanbul.git#harmony",
+    "mocha": "^1.17.1"
   }
 }
