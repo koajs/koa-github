@@ -1,4 +1,12 @@
 
+0.0.5 / 2014-03-12
+==================
+
+  * use istanbul, remove unused dependencies
+  * Merge pull request #1 from zdalniacy/master
+  * Merge pull request #1 from zdalniacy/patch-1
+  * Fixing coveralls for koa-github
+
 0.0.4 / 2014-01-08
 ==================
 
