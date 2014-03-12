@@ -1,4 +1,4 @@
-koa-github [![Build Status](https://secure.travis-ci.org/dead-horse/koa-github.png)](http://travis-ci.org/dead-horse/koa-github) [![Coverage Status](https://coveralls.io/repos/dead-horse/koa-github/badge.png)](https://coveralls.io/r/dead-horse/koa-github) [![Dependency Status](https://gemnasium.com/dead-horse/koa-github.png)](https://gemnasium.com/dead-horse/koa-github)
+koa-github [![Build Status](https://secure.travis-ci.org/dead-horse/koa-github.png)](http://travis-ci.org/dead-horse/koa-github)
 ==========
 
 simple github auth middleware for koa
@@ -46,10 +46,10 @@ app.on('error', function (err) {
 http.createServer(app.callback()).listen(7001);
 ```
 
-## Options  
+## Options
 
 ```
-  @param {Object} options 
+  @param {Object} options
     - [String] clientID      github client ID     // regist in https://github.com/settings/applications
     - [String] clientSecret  github client secret
     - [String] callbackURL   github redirect url

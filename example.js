@@ -34,3 +34,4 @@ app.on('error', function (err) {
 });
 
 http.createServer(app.callback()).listen(7001);
+console.log('open http://localhost:7001/ in your browser!');

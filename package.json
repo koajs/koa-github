@@ -28,17 +28,14 @@
   "dependencies": {
     "co-urllib": "0.0.1",
     "debug": "0.7.4",
-    "koa": "0.2.1",
-    "koa-sess": "0.0.5",
     "utility": "0.1.10"
   },
   "devDependencies": {
     "contributors": "*",
     "koa": "*",
     "koa-sess": "*",
-    "mocha": "*",
     "should": "2.1.1",
     "supertest": "0.8.3",
-    "coveralls": "^2.8.0"
+    "istanbul": "git://github.com/gotwarlost/istanbul.git#harmony"
   }
 }
