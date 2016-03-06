@@ -1,4 +1,4 @@
-koa-github [![Build Status](https://secure.travis-ci.org/dead-horse/koa-github.png)](http://travis-ci.org/dead-horse/koa-github)
+koa-github [![Build Status](https://secure.travis-ci.org/koajs/koa-github.png)](http://travis-ci.org/koajs/koa-github)
 ==========
 
 simple github auth middleware for koa
@@ -7,7 +7,7 @@ simple github auth middleware for koa
 
 ## Example
 
-```
+```js
 //use http://localhost:7001 to test
 
 var koa = require('koa');
@@ -61,7 +61,7 @@ http.createServer(app.callback()).listen(7001);
     - [String] redirect      redirect key when call signinPath, so we can redirect after auth, default is `redirect_uri`
 ```
 
-* clientID, clentSecret and callbackURL are regist in https://github.com/settings/applications.
+* clientID, clentSecret and callbackURL are registered in https://github.com/settings/applications.
 * if you set userKey field, `koa-github` will request to get the user info and set this object to `this.session[options.userKey]`, otherwise `koa-github` will not do this request.
 * if you triggle by `/github/auth?redirect_uri=/callback`, `koa-github` will redirect to `/callback` after auth, and the redirect_uri only accept start with `/`.
 
