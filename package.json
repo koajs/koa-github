@@ -28,8 +28,8 @@
   },
   "homepage": "https://github.com/dead-horse/koa-github",
   "dependencies": {
-    "co-urllib": "0.0.1",
-    "debug": "0.7.4",
+    "co-urllib": "0.1.0",
+    "debug": "2.6.9",
     "utility": "0.1.10"
   },
   "devDependencies": {
